@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>LDAP to CSV Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #f0f4c3);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background-color: #00796b;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        header a {
+            color: #a5d6a7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main container */
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            margin: 40px auto;
+            flex-grow: 1; /* take remaining height */
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px dashed #b2dfdb;
+            border-radius: 6px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        input[type="file"]:hover {
+            background: #e0f2f1;
+        }
+
+        button {
+            background-color: #00796b;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #004d40;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #004d40;
+            color: #cfd8dc;
+            font-size: 13px;
+            text-align: center;
+            padding: 12px 0;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>LDAP File Converter</div>
+        <div><a href="https://conduent.com/" target="_blank" rel="noopener noreferrer">Go to Organization Page</a></div>
+    </header>
+
+    <div class="container">
+        <h2>LDAP TXT to CSV Converter</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".out,.ldapf" required />
+            <br />
+            <button type="submit">Browse Files</button>
+        </form>
+        <div style="margin-top: 16px; font-size: 12px; color: #666;">
+            For Conduent Internal use only
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Yash Dewan. All rights reserved.
+    </footer>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "output.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+            } else {
+                alert("Error processing the file.");
+            }
+        };
+    </script>
+</body>
+</html>
